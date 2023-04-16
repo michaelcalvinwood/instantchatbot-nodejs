@@ -121,7 +121,15 @@ const postHandler = (req, res) => {
         
         const contexts = await qdrant.getContexts(botId, openAIKey, prompt, 3);
 
-        console.log(contexts);
+        if (!contexts.length) {
+            res.status(401).json({error: 'invalid request 4'});
+            return resolve('error: invalid request');
+        }
+
+        const query = qdrant.createContextBasedPrompt(prompt, contexts);
+        console.log(query);
+
+        //console.log(contexts);
 
         // convert query into embedding
 

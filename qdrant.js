@@ -4,11 +4,39 @@ const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require('uuid');
 const ingest = require('./ingest');
 
-
-
 /*
  * collections
  */
+
+exports.getDavinciResponse = async (prompt) => {
+    const request = {
+        url: 'https://api.openai.com/v1/completions',
+        method: 'post',
+        headers: {
+            'Authorization': `Bearer ${process.env.MCW_OPENAI_KEY}`,
+            'OpenAI-Organization': process.env.MCW_OPENAI_ORG_ID
+        },
+        data: {
+            model: "text-davinci-003",
+            prompt,
+            max_tokens: 4800,
+            temperature: 0.25,
+        }
+
+    }
+
+    let response;
+
+    try {
+        response = await axios(request);
+        console.log(response.data);
+    } catch (e) {
+        console.error(e);
+        return 'AI Error: Please try again.';
+    }
+
+    return response.data;
+}
 
 const promisfiedAxios = request => {
     return new Promise (async(resolve, reject) => {

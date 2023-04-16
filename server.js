@@ -76,7 +76,8 @@ app.get('/', (req, res) => {
 });
 
 app.post('/', (req, res) => {
-    console.log('post')
+    const { prompt, token } = req.body;
+    console.log(prompt, token)
     res.status(200).json({bot: 'I am here to help you.'});
 })
 

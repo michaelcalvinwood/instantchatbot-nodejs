@@ -10,12 +10,28 @@ const https = require('https');
 const http = require('http');
 const cors = require('cors');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 
 const mysql = require('./mysql');
 
+const {OPENAI_API_KEY, JWT_SECRET} = process.env;
 
+const getConnectionInfo = async (botId) => await mysql.query(`SELECT chunk, vector, app FROM connection_info WHERE bot_id = '${botId}'`);
 
+const getChatbotToken = async (botId, openAIKey, domains) => {
+    const connectionInfo = await getConnectionInfo(id);
 
+    if (!connectionInfo[0]) {
+        console.error(`ERROR: Could not get connection info for bot ${botId}`);
+        return false;
+    }
+
+    const { chunk, vector, app} = connectionInfo[0];
+
+    const token = {botId, openAIKey, domains, chunk, vector, app}
+}
+
+getChatbotToken('test', OPENAI_API_KEY, ['gamma.pymnts.com', 'pymnts.com', 'www.pymnts.com']);
 
 const app = express();
 app.use(express.static('public'));

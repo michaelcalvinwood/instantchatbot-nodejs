@@ -129,13 +129,17 @@ const postHandler = (req, res) => {
         const query = qdrant.createContextBasedPrompt(prompt, contexts);
         console.log(query);
 
+        let answer = await qdrant.getDavinciResponse(query, openAIKey);
+
+
+
         //console.log(contexts);
 
         // convert query into embedding
 
         
         
-        res.status(200).json({bot: 'I am here to help you always.'});
+        res.status(200).json({bot: answer});
 
         return resolve('ok');
     })

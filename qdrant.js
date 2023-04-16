@@ -8,22 +8,24 @@ const ingest = require('./ingest');
  * collections
  */
 
-exports.getDavinciResponse = async (prompt) => {
+exports.getDavinciResponse = async (prompt, openAIKey) => {
     const request = {
         url: 'https://api.openai.com/v1/completions',
         method: 'post',
         headers: {
-            'Authorization': `Bearer ${process.env.MCW_OPENAI_KEY}`,
-            'OpenAI-Organization': process.env.MCW_OPENAI_ORG_ID
+            'Authorization': `Bearer ${openAIKey}`,
+            'OpenAI-Organization': 'org-au8QBof6DlN4hzFuXrH1WBGE'            
         },
         data: {
             model: "text-davinci-003",
             prompt,
-            max_tokens: 4800,
+            max_tokens: 1000,
             temperature: 0.25,
         }
 
     }
+
+
 
     let response;
 
@@ -32,10 +34,13 @@ exports.getDavinciResponse = async (prompt) => {
         console.log(response.data);
     } catch (e) {
         console.error(e);
+        console.error(e.response.data);
         return 'AI Error: Please try again.';
     }
 
-    return response.data;
+    let answer = JSON.parse(response.data.choices[0].text.replaceAll("\n", ""));
+
+    return answer.answer;
 }
 
 const promisfiedAxios = request => {
@@ -112,7 +117,7 @@ exports.addPoint = async (host, port, collectionName, point) => {
 }
 
 exports.createContextBasedPrompt = (query, contexts) => {
-    let prompt = `"""Answer the question as truthfully as possible using the provided contexts, and if the answer cannot be found by combining the contexts below, say "I don't know". Also state all the context numbers that helped to provide you with the answer. The return format must be stringified JSON in the following format: {
+    let prompt = `"""Answer the question as truthfully as possible using the provided contexts, and if the answer cannot be found by combining the contexts below, say "I don't know". Provide as much detail as you can in your response. Also state all the context numbers that helped to provide you with the answer. The return format must be stringified JSON in the following format: {
         "answer": answer goes here
         "provider": array of the context numbers that provided you the answer here
     }

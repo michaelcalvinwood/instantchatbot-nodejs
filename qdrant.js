@@ -4,6 +4,8 @@ const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require('uuid');
 const ingest = require('./ingest');
 
+
+
 /*
  * collections
  */

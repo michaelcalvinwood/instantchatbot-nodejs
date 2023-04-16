@@ -12,6 +12,8 @@ const cors = require('cors');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
+const qdrant = require('./qdrant');
+
 const mysql = require('./mysql');
 
 const {OPENAI_API_KEY, JWT_SECRET} = process.env;
@@ -94,6 +96,15 @@ const postHandler = (req, res) => {
             res.status(401).json({error: 'invalid'});
             return resolve('error: invalid');
         }
+
+
+        const { botId, openAIKey, domains } = decodedToken;        
+        const vector = decodedToken.vector ? JSON.parse(decodedToken.vector) : null;
+
+        if (!botId || !openAIKey || !domains || !vector) {
+            res.status(401).json({error: 'invalid 3'});
+            return resolve('error: invalid 3');
+        }
     
         const origin = req.headers.origin;
     
@@ -107,6 +118,15 @@ const postHandler = (req, res) => {
         }
     
         console.log(decodedToken);
+        
+        const contexts = await qdrant.getContexts(botId, openAIKey, prompt, 3);
+
+        console.log(contexts);
+
+        // convert query into embedding
+
+        
+        
         res.status(200).json({bot: 'I am here to help you always.'});
 
         return resolve('ok');

@@ -22,6 +22,19 @@ const createDirIfNotExists = dir => {
     if(!fs.existsSync(dir)) fs.mkdirSync(dir);
 }
 
+function decodeToken(info) {
+    // if invalid return false
+    if (!jwt.verify(info, JWT_SECRET)) return false;
+
+    const token = jwt.decode(info);
+    const curTime = new Date();
+
+    // if expired return false
+    if (token.exp < curTime.getTime()/1000) return false;
+
+    return token;
+}
+
 const createChatbotToken = async (botId, openAIKey, domains) => {
     const connectionInfo = await getConnectionInfo(botId);
 
@@ -62,7 +75,42 @@ app.use(cors());
  * Functions
  */
 
+const postHandler = (req, res) => {
+    console.log('posthandler');
+    return new Promise(async (resolve, reject) => {
+        const { prompt, token } = req.body;
 
+        console.log('prompt', prompt);
+
+        if (!prompt || !token) {
+            res.status(400).json({error: 'invalid'});
+            return resolve('error: 400');
+        }
+    
+        const decodedToken = decodeToken(token);
+    
+        if (decodedToken === false) {
+            res.status(401).json({error: 'invalid'});
+            return resolve('error: invalid');
+        }
+    
+        const origin = req.headers.origin;
+    
+        const url = new URL(origin);
+    
+        const test = decodedToken.domains ? decodedToken.domains.find(domain => domain === url.host) : null;
+    
+        if (!test) {
+            res.status(401).json({error: 'invalid request'});
+            return resolve('error: invalid request');
+        }
+    
+        console.log(url, origin, decodedToken);
+        res.status(200).json({bot: 'I am here to help you always.'});
+
+        return resolve('ok');
+    })
+}
 
 
 
@@ -75,11 +123,7 @@ app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
 
-app.post('/', (req, res) => {
-    const { prompt, token } = req.body;
-    console.log(prompt, token)
-    res.status(200).json({bot: 'I am here to help you.'});
-})
+app.post('/', (req, res) => { postHandler(req, res)});
 
 const httpsServer = https.createServer({
     key: fs.readFileSync(privateKeyPath),

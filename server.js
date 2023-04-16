@@ -46,7 +46,7 @@ const createChatbotToken = async (botId, openAIKey, domains) => {
     const { chunk, vector, app} = connectionInfo[0];
 
     const appObj = JSON.parse(app);
-    console.log('app', app)
+    //console.log('app', app)
 
     const token = jwt.sign({botId, openAIKey, domains, chunk, vector, app}, JWT_SECRET);
     
@@ -56,8 +56,9 @@ const createChatbotToken = async (botId, openAIKey, domains) => {
 
     createDirIfNotExists(`/var/www/instantchatbot.net/${botId}`);
     
-    console.log(`/var/www/instantchatbot.net/${botId}/instantchatbot.js`);
+    //console.log(`/var/www/instantchatbot.net/${botId}/instantchatbot.js`);
     
+    //console.log(css);
 
     fs.writeFileSync(`/var/www/instantchatbot.net/${botId}/instantchatbot.js`, js);
 
@@ -105,7 +106,7 @@ const postHandler = (req, res) => {
             return resolve('error: invalid request');
         }
     
-        console.log(url, origin, decodedToken);
+        console.log(decodedToken);
         res.status(200).json({bot: 'I am here to help you always.'});
 
         return resolve('ok');

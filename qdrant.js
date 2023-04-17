@@ -14,7 +14,7 @@ exports.getDavinciResponse = async (prompt, openAIKey) => {
         method: 'post',
         headers: {
             'Authorization': `Bearer ${openAIKey}`,
-            'OpenAI-Organization': 'org-au8QBof6DlN4hzFuXrH1WBGE'            
+            
         },
         data: {
             model: "text-davinci-003",

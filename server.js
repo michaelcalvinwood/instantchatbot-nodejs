@@ -56,15 +56,16 @@ const createChatbotToken = async (botId, openAIKey, domains) => {
 
     const js = `const instantChatbotToken='${token}';\nconst instantChatbotHost='https://${appObj.host}:${appObj.port}';\n\n` + fs.readFileSync('./instantchatbot.js', 'utf-8');
 
-    createDirIfNotExists(`/var/www/instantchatbot.net/${botId}`);
+    createDirIfNotExists(`/var/www/instantchatbot.net/bot/`);
+    createDirIfNotExists(`/var/www/instantchatbot.net/bot/${botId}`);
     
     //console.log(`/var/www/instantchatbot.net/${botId}/instantchatbot.js`);
     
     //console.log(css);
 
-    fs.writeFileSync(`/var/www/instantchatbot.net/${botId}/instantchatbot.js`, js);
+    fs.writeFileSync(`/var/www/instantchatbot.net/bot/${botId}/instantchatbot.js`, js);
 
-    fs.writeFileSync(`/var/www/instantchatbot.net/${botId}/instantchatbot.css`, css);   
+    fs.writeFileSync(`/var/www/instantchatbot.net/bot/${botId}/instantchatbot.css`, css);   
 }
 
 createChatbotToken('test', OPENAI_API_KEY, ['gamma.pymnts.com', 'pymnts.com', 'www.pymnts.com']);
@@ -96,7 +97,6 @@ const postHandler = (req, res) => {
             res.status(401).json({error: 'invalid'});
             return resolve('error: invalid');
         }
-
 
         const { botId, openAIKey, domains } = decodedToken;        
         const vector = decodedToken.vector ? JSON.parse(decodedToken.vector) : null;
